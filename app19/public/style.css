@@ -1,0 +1,69 @@
+h2 {
+    text-align: center;
+}
+
+button {
+    justify-content: center;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+}
+
+main > div {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+main > div > span {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+main > span {
+    display: flex;
+    flex-grow: 1;
+    padding: 10px 0px;
+}
+
+main > span > * {
+    display: flex;
+    flex-grow: 1;
+}
+
+main > div > span > input {
+    display: flex;
+    flex-grow: 1;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    margin: 5px;
+    padding: 0px 20px;
+    background-color: gainsboro;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+li > * {
+    display: flex;
+    width: calc(80% / 2);
+}
+
+li > *:first-child {
+    display: flex;
+    width: 20%;
+}

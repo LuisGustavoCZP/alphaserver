@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <link rel="stylesheet" href="../style.css" />
+    </head>
+    <body>
+        <main>
+            <h2>Registrar Cliente</h2>
+            <div>
+                <label for="inputName">Nome do Cliente</label>
+                <span>
+                    <input type="text" name="inputName" id="inputName" list="inputNames" />
+                    <datalist id="inputNames">
+                    </datalist>
+                </span>
+                <label for="inputEmail">Email do Cliente</label>
+                <input type="text" name="inputEmail" id="inputEmail">
+            </div>
+            <span>
+                <button onclick="RegisterUser ()">Registrar</button>
+            </span>
+        </main>
+        <ul id="produtosbox">
+    
+        </ul>
+    </body>
+    <script src="register.js"></script>
+</html>
