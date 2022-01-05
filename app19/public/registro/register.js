@@ -24,3 +24,8 @@ function RegisterUser ()
         console.log('Request failed', error);
     });
 }
+
+function Voltar ()
+{
+    window.location.href=window.location.href.replace("/registro", "");
+}

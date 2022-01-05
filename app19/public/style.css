@@ -4,6 +4,7 @@ h2 {
 
 button {
     justify-content: center;
+    padding: 10px;
 }
 
 body {
@@ -21,6 +22,10 @@ main {
 main > div {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+}
+
+main > div > * {
+    margin: 5px;
 }
 
 main > div > span {

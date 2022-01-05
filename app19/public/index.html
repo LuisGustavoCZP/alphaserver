@@ -5,25 +5,10 @@
     </head>
     <body>
         <main>
-            <h2>Consultar Cliente</h2>
-            <div>
-                <label for="inputID">ID do Cliente</label>
-                <input type="number" name="inputID" id="inputID">
-                <label for="inputName">Nome do Cliente</label>
-                <span>
-                    <input type="text" name="inputName" id="inputName" list="inputNames" oninput="ShowNameOptions ()" />
-                    <datalist id="inputNames">
-                    </datalist>
-                </span>
-                <label for="inputEmail">Email do Cliente</label>
-                <span>
-                    <input type="text" name="inputEmail" id="inputEmail" list="inputEmails" oninput="ShowEmailOptions ()" />
-                    <datalist id="inputEmails">
-                    </datalist>
-                </span>
-            </div>
+            <h2>Clientes</h2>
             <span>
-                <button onclick="Consultar ()">Consultar</button>
+                <button onclick="PageConsulta ()">Consultar</button>
+                <button onclick="PageRegistro ()">Registrar</button>
             </span>
         </main>
         <ul id="produtosbox">
