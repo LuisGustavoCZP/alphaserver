@@ -20,6 +20,46 @@ function addUser (user) {
     return user;
 }
 
+function StrangeCompare (a, b) {
+    let points = 0;
+    const aWords = a.split(" ");
+    const bWords = b.split(" ");
+    if(aWords.length <= bWords.length)
+    {
+        if(b.includes(a)) points += .5;
+        for (let i = 0; i < aWords.length; i++)
+        {
+            let subpoints = 0;
+            const aWord = aWords[i];
+            const bWord = bWords[i];
+
+            if(aWord.length <= bWord.length)
+            {
+                if(bWord.includes(aWord)) subpoints += .25;
+                for (let i = 0; i < aWord.length; i++)
+                {
+                    if(aWord[i] != bWord[i]) continue;
+                    subpoints += .75/bWord.length;//1/(1 << (bWord.length-i));
+                }
+            }
+            else if(aWord.length > bWord.length)
+            {
+                if(aWord.includes(bWord)) subpoints += .25;
+                for (let i = 0; i < bWord.length; i++)
+                {
+                    if(aWord[i] != bWord[i]) continue;
+                    subpoints += .75/aWord.length;
+                    //subpoints += 1/(1 << (aWord.length-i));
+                }
+            }
+            
+            points += subpoints / aWords.length;
+        }
+    }
+    
+    return points;
+}
+
 app.post('/newuser', function (req, res) {
     const pms = req.body;
     const user = addUser(pms);
@@ -75,9 +115,12 @@ app.post('/listnames', function (req, res) {
     {
         resultSearch = resultSearch.reduce((p, user) => 
         {
-            if(user.name.includes(pms.name)) p.push(user);
+            const points = StrangeCompare(pms.name, user.name);
+            if(points > .5) p.push(user); // || user.name.includes(pms.name)
+            console.log(points);
             return p;
         }, []);
+        resultSearch.sort((a, b) => { return StrangeCompare(pms.name, a.name) > StrangeCompare(pms.name, b.name) ? -1 : 1});
         console.log("Search name "+pms.name+" found "+resultSearch.length+" users");
     }
     if(resultSearch.length == 0) {

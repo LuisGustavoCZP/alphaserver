@@ -11,15 +11,13 @@
                 <input type="number" name="inputID" id="inputID">
                 <label for="inputName">Nome do Cliente</label>
                 <span>
-                    <input type="text" name="inputName" id="inputName" list="inputNames" oninput="ShowNameOptions ()" />
-                    <datalist id="inputNames">
-                    </datalist>
+                    <input type="text" name="inputName" id="inputName" />
+                    <select id="inputNames" onblur="SubmitSelect (inputNames, inputName)"></select>
                 </span>
                 <label for="inputEmail">Email do Cliente</label>
                 <span>
-                    <input type="text" name="inputEmail" id="inputEmail" list="inputEmails" oninput="ShowEmailOptions ()" />
-                    <datalist id="inputEmails">
-                    </datalist>
+                    <input type="text" name="inputEmail" id="inputEmail" />
+                    <select id="inputEmails" onblur="SubmitSelect (inputEmails, inputEmail)"></select>
                 </span>
             </div>
             <span>

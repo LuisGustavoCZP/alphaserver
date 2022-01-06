@@ -5,52 +5,72 @@ const inputEmail = document.getElementById("inputEmail");
 const inputNames = document.getElementById("inputNames");
 const inputEmails = document.getElementById("inputEmails");
 
-function ShowNameOptions () 
+inputName.oninput = () => {RefreshOptions (inputName, ShowNames)};
+inputEmail.oninput = () => {RefreshOptions (inputEmail, ShowEmails)}
+var consultTimer;
+
+function RefreshOptions (input, callback) 
 {
-    inputNames.innerHTML = "";
-    if(inputName.value.length > 3)
+    if(consultTimer != undefined) 
     {
-        fetch("/listnames", 
-        {
-            method: 'post',
-            body: JSON.stringify({name:inputName.value}),
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then((resp) => resp.json())
-        .then(function (data) {
-            console.log(data);
-            data.forEach(element => {
-                inputNames.innerHTML += "<option value='"+element.name+"'/>";
-            });
-        })
-        .catch(function (error) {
-            console.log('Request failed', error);
-        });
+        console.log("Refresh Timer");
+        clearTimeout(consultTimer);
+        consultTimer = undefined;
     }
+    if(input.value.length <= 3) return;
+
+    console.log("Criando Timer");
+    consultTimer = setTimeout(() => {console.log("Executando Timer"); callback (input);}, 2000);
 }
 
-function ShowEmailOptions () 
+function MakeSearch(search, input, callback) 
 {
-    inputEmails.innerHTML = "";
-    if(inputEmail.value.length > 3)
+    fetch(search.route, 
     {
-        fetch("/listemails", 
+        method: 'post',
+        body: search.param != undefined ? JSON.stringify({[search.param]:input.value}) : JSON.stringify({"param":input.value}),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => resp.json())
+    .then(data => {callback(data, input, search.param);})
+    .catch(function (error) {
+        console.log('Request failed', error);
+    });
+}
+
+function ShowSearchResults (data, input, param, select) 
+{
+    const text = input.value;
+    select.innerHTML = "";
+    console.log(data);
+    if(data.length > 0) select.innerHTML += `<option onclick="SubmitSelect (${select.id}, ${input.id})" value="${text}">${text}</option>`;
+    data.forEach(element => 
+    {
+        if(text != element[param]) 
         {
-            method: 'post',
-            body: JSON.stringify({name:inputEmail.value}),
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then((resp) => resp.json())
-        .then(function (data) {
-            console.log(data);
-            data.forEach(element => {
-                inputEmails.innerHTML += "<option value='"+element.email+"'/>";
-            });
-        })
-        .catch(function (error) {
-            console.log('Request failed', error);
-        });
-    }
+            select.innerHTML += `<option onclick="SubmitSelect (${select.id}, ${input.id})" value="${element[param]}">${element[param]}</option>`;
+        }
+    });
+    select.size = select.length;
+    select.classList.add("show");
+    //select.focus();
+}
+
+function ShowNames (input) 
+{
+    MakeSearch({route:"/listnames", param:"name"}, input, (data, ipt, param) => {ShowSearchResults(data, ipt, param, inputNames)});
+}
+
+function ShowEmails (input) 
+{
+    MakeSearch({route:"/listemails", param:"email"}, input, (data, ipt, param) => {ShowSearchResults(data, ipt, param, inputEmails)});
+}
+
+function SubmitSelect (select, input)
+{
+    select.size = 0;
+    select.classList.remove("show");
+    input.value = select.value;
 }
 
 function Consultar () 

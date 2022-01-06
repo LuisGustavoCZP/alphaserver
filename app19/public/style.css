@@ -32,6 +32,22 @@ main > div > span {
     display: flex;
     flex-grow: 1;
     justify-content: space-between;
+    flex-direction: column;
+    position: relative;
+}
+
+
+main > div > span > select {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    z-index: -1;
+    top: 20px;
+}
+
+select.show {
+    z-index: 1;
+    opacity: 1;
 }
 
 main > span {
