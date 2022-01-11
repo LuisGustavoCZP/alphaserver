@@ -53,7 +53,7 @@ function ShowSearchResults (data, input, param, select)
     });
     select.size = select.length;
     select.classList.add("show");
-    //select.focus();
+    select.focus();
 }
 
 function ShowNames (input) 

@@ -60,6 +60,11 @@ function StrangeCompare (a, b) {
     return points;
 }
 
+app.use(function (req, res, next) {
+    console.log(`Request from ${req.ip}`);
+    next();
+})
+
 app.post('/newuser', function (req, res) {
     const pms = req.body;
     const user = addUser(pms);
@@ -149,6 +154,6 @@ app.post('/listemails', function (req, res) {
     }
 });
 
-app.listen(3000, function () {
+app.listen(8000, function () {
     console.log('Ready')
 });
