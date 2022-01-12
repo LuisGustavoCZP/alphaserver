@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "filesystem": "^1.0.1"
+  },
+  "name": "randomdata",
+  "version": "1.0.0",
+  "main": "randomizedata.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

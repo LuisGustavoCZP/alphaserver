@@ -1,12 +1,11 @@
-const produtosBox = document.getElementById("produtosbox");
+const paramsBox = document.getElementById("paramsbox");
+const datasBox = document.getElementById("datasbox");
 const inputID = document.getElementById("inputID");
 const inputName = document.getElementById("inputName");
 const inputEmail = document.getElementById("inputEmail");
 const inputNames = document.getElementById("inputNames");
 const inputEmails = document.getElementById("inputEmails");
 
-inputName.onkeydown = () => {RefreshOptions (inputName, ShowNames)};
-inputEmail.onkeydown = () => {RefreshOptions (inputEmail, ShowEmails)}
 var consultTimer;
 
 function RefreshOptions (input, callback) 
@@ -73,7 +72,23 @@ function SubmitSelect (select, input)
     input.value = select.value;
 }
 
-function Consultar () 
+function LoadConfig ()
+{
+    fetch("/config/get")
+    .then((resp) => resp.json())
+    .then(function (data) {
+        console.log(data);
+        paramsBox.innerHTML = "";
+        data.forEach(element => {
+            paramsBox.innerHTML += `<li><button>${element}</button></li>`;
+        });
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+    });
+}
+
+function SaveConfig () 
 {
     let user = 
     {
@@ -82,7 +97,7 @@ function Consultar ()
         email:inputEmail.value
     };
 
-    fetch("/search", 
+    fetch("/saveconfigs", 
     {
         method: 'post',
         body: JSON.stringify(user),
@@ -91,9 +106,9 @@ function Consultar ()
     .then((resp) => resp.json())
     .then(function (data) {
         console.log(data);
-        produtosBox.innerHTML = "";
+        paramsBox.innerHTML = "";
         data.forEach(element => {
-            produtosBox.innerHTML += "<li><h3>ID: "+element.id+"</h3><h4>Nome: "+element.name+"</h4><h5>Email: "+element.email+"</h5></li>";
+            paramsBox.innerHTML += `<li><input type="text" value="${element}" /></li>`;
         });
     })
     .catch(function (error) {
@@ -106,4 +121,5 @@ function Voltar ()
     window.location.href=window.location.href.replace("/consulta", "");
 }
 
+LoadConfig ();
 //Consultar ();

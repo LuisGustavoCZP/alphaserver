@@ -1,0 +1,105 @@
+h2 {
+    text-align: center;
+}
+
+button {
+    justify-content: center;
+    padding: 10px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+}
+
+header > div {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+header > div > * {
+    margin: 5px;
+}
+
+header > div > span {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    flex-direction: column;
+    position: relative;
+}
+
+
+header > div > span > select {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    z-index: -1;
+    top: 20px;
+}
+
+select.show {
+    z-index: 1;
+    opacity: 1;
+}
+
+header > span {
+    display: flex;
+    flex-grow: 1;
+    padding: 10px 0px;
+}
+
+header > span > * {
+    display: flex;
+    flex-grow: 1;
+}
+
+header > div > span > input {
+    display: flex;
+    flex-grow: 1;
+}
+
+header > ul {
+    display: flex;
+    flex-direction: row;
+}
+
+header > ul > li {
+    margin: 0px;
+    padding: 5px 0px;
+    background-color: gainsboro;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    margin: 5px;
+    padding: 0px 20px;
+    background-color: gainsboro;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+li > *:first-child {
+    display: flex;
+    flex-grow: 1;
+}

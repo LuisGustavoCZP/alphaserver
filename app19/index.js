@@ -5,16 +5,20 @@ var app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname+"/public"));
 
+var clientesPath = "data/rusuarios.json"
+
 var clientes = loadUsers();
 
 function loadUsers () {
-    return JSON.parse(filesystem.readFileSync('data/usuarios.json', 'utf-8'));
+    return JSON.parse(filesystem.readFileSync(clientesPath, 'utf-8'));
 }
 
 function addUser (user) {
+    if(user.name == "" | undefined) return;
+    if(user.email == "" | undefined) return;
     user.id = clientes.count++;
     clientes.list.push(user);
-    filesystem.writeFileSync('data/usuarios.json', JSON.stringify(clientes), 'utf8', function (err) {
+    filesystem.writeFileSync(clientesPath, JSON.stringify(clientes), 'utf8', function (err) {
         if (err) throw err;
     });
     return user;
@@ -60,6 +64,22 @@ function StrangeCompare (a, b) {
     return points;
 }
 
+function searchUsers (resultSearch, param, value)
+{
+    if(value == undefined || value == "") return resultSearch;
+
+    resultSearch = resultSearch.reduce((p, user) => 
+    {
+        const userparam = user[param];
+        console.log(userparam);
+        if(userparam != undefined && userparam.includes(value)) p.push(user);
+        return p;
+    }, []);
+    resultSearch.sort((a, b) => { return StrangeCompare(value, a[param]) > StrangeCompare(value, b[param]) ? -1 : 1});
+    console.log("Search name "+value+" found "+resultSearch.length+" users");
+    return resultSearch;
+}
+
 app.use(function (req, res, next) {
     console.log(`Request from ${req.ip}`);
     next();
@@ -81,77 +101,22 @@ app.get('/all', function (req, res) {
 
 app.post('/search', function (req, res) {
     const pms = req.body;
-    let resultSearch = clientes.list;
-    if(pms.id != undefined) 
-    {
-        resultSearch = resultSearch.reduce((p, user) => 
-        {
-            if(pms.id == user.id) p.push(user);
-            return p;
-        }, []);
-        console.log("Search id "+pms.id+" found "+resultSearch.length+" users");
-    }
-    if(pms.name != undefined && pms.name != "") 
-    {
-        resultSearch = resultSearch.reduce((p, user) => 
-        {
-            if(user.name.includes(pms.name)) p.push(user);
-            return p;
-        }, []);
-        console.log("Search name "+pms.name+" found "+resultSearch.length+" users");
-    }
-    if(pms.email != undefined && pms.email != "") 
-    {
-        resultSearch = resultSearch.reduce((p, user) => 
-        {
-            if(user.email.includes(pms.email)) p.push(user);
-            return p;
-        }, []);
-        console.log("Search email "+pms.email+" found "+resultSearch.length+" users");
-    }
-    
+    let resultSearch = searchUsers(clientes.list, "id", pms.id);
+    resultSearch = searchUsers(resultSearch, "name", pms.name);
+    resultSearch = searchUsers(resultSearch, "email", pms.email);
     res.json(resultSearch);
 });
 
+app.post('/listids', function (req, res) {
+    res.json(searchUsers(clientes.list, "id", req.body.id));
+});
+
 app.post('/listnames', function (req, res) {
-    const pms = req.body;
-    let resultSearch = clientes.list;
-    if(pms.name != undefined && pms.name != "") 
-    {
-        resultSearch = resultSearch.reduce((p, user) => 
-        {
-            const points = StrangeCompare(pms.name, user.name);
-            if(points > .5) p.push(user); // || user.name.includes(pms.name)
-            console.log(points);
-            return p;
-        }, []);
-        resultSearch.sort((a, b) => { return StrangeCompare(pms.name, a.name) > StrangeCompare(pms.name, b.name) ? -1 : 1});
-        console.log("Search name "+pms.name+" found "+resultSearch.length+" users");
-    }
-    if(resultSearch.length == 0) {
-        res.json([]);
-    } else {
-        res.json(resultSearch);
-    }
+    res.json(searchUsers(clientes.list, "name", req.body.name));
 });
 
 app.post('/listemails', function (req, res) {
-    const pms = req.body;
-    let resultSearch = clientes.list;
-    if(pms.email != undefined && pms.email != "") 
-    {
-        resultSearch = resultSearch.reduce((p, user) => 
-        {
-            if(user.email.includes(pms.email)) p.push(user);
-            return p;
-        }, []);
-        console.log("Search email "+pms.email+" found "+resultSearch.length+" users");
-    }
-    if(resultSearch.length == 0) {
-        res.json([]);
-    } else {
-        res.json(resultSearch);
-    }
+    res.json(searchUsers(clientes.list, "email", req.body.email));
 });
 
 app.listen(8000, function () {
