@@ -5,8 +5,18 @@ const inputEmail = document.getElementById("inputEmail");
 const inputNames = document.getElementById("inputNames");
 const inputEmails = document.getElementById("inputEmails");
 
-inputName.onkeydown = () => {RefreshOptions (inputName, ShowNames)};
-inputEmail.onkeydown = () => {RefreshOptions (inputEmail, ShowEmails)}
+inputName.onkeydown = (evt) => 
+{
+    if(evt.keyCode == 13){
+        ShowNames(evt.target);
+    } else RefreshOptions (evt.target, ShowNames)
+};
+inputEmail.onkeydown = (evt) => 
+{
+    if(evt.keyCode == 13){
+        ShowEmails(evt.target);
+    } else RefreshOptions (evt.target, ShowEmails)
+};
 var consultTimer;
 
 function RefreshOptions (input, callback) 

@@ -6,7 +6,6 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname+"/public"));
 
 var clientesPath = "data/rusuarios.json"
-
 var clientes = loadUsers();
 
 function loadUsers () {
@@ -66,16 +65,17 @@ function StrangeCompare (a, b) {
 
 function searchUsers (resultSearch, param, value)
 {
-    if(value == undefined || value == "") return resultSearch;
-
+    if(value == undefined || value == "") return [];
+    const vP = value.toString().toLowerCase();
     resultSearch = resultSearch.reduce((p, user) => 
     {
-        const userparam = user[param];
+        const userparam = user[param].toString();
         console.log(userparam);
-        if(userparam != undefined && userparam.includes(value)) p.push(user);
+        if(userparam == undefined) return p;
+        if(userparam.toLowerCase().includes(vP)) p.push(user);
         return p;
     }, []);
-    resultSearch.sort((a, b) => { return StrangeCompare(value, a[param]) > StrangeCompare(value, b[param]) ? -1 : 1});
+    //resultSearch.sort((a, b) => { return StrangeCompare(value, a[param]) > StrangeCompare(value, b[param]) ? -1 : 1});
     console.log("Search name "+value+" found "+resultSearch.length+" users");
     return resultSearch;
 }
@@ -101,22 +101,23 @@ app.get('/all', function (req, res) {
 
 app.post('/search', function (req, res) {
     const pms = req.body;
-    let resultSearch = searchUsers(clientes.list, "id", pms.id);
-    resultSearch = searchUsers(resultSearch, "name", pms.name);
-    resultSearch = searchUsers(resultSearch, "email", pms.email);
+    const hasID = pms.id != undefined && pms.id != "", hasName = pms.name != "", hasEmail = pms.email != "";
+    let resultSearch = searchUsers(clientes, "id", pms.id);
+    if(hasName) resultSearch = searchUsers(hasID ? resultSearch : clientes, "name", pms.name);
+    if(hasEmail) resultSearch = searchUsers(hasName ? resultSearch : clientes, "email", pms.email);
     res.json(resultSearch);
 });
 
 app.post('/listids', function (req, res) {
-    res.json(searchUsers(clientes.list, "id", req.body.id));
+    res.json(searchUsers(clientes, "id", req.body.id));
 });
 
 app.post('/listnames', function (req, res) {
-    res.json(searchUsers(clientes.list, "name", req.body.name));
+    res.json(searchUsers(clientes, "name", req.body.name));
 });
 
 app.post('/listemails', function (req, res) {
-    res.json(searchUsers(clientes.list, "email", req.body.email));
+    res.json(searchUsers(clientes, "email", req.body.email));
 });
 
 app.listen(8000, function () {

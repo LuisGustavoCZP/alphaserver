@@ -45,7 +45,7 @@ function RandomizeUsers (n)
             if(j == 0) user.name += " ";
         }
 
-        user.email = user.name.toLowerCase().replace(" ", "");
+        user.email = user.name.toLowerCase().replaceAll(" ", "");
         if(Math.random() >= .33) {
             user.email += "@gmail.com"
         } else if(Math.random() >= .66) {
@@ -76,26 +76,33 @@ function addRandomData (param, value)
 
 app.post('/create', function (req, res) {
     const pms = req.body;
-    console.log(pms.quanty);
+    //console.log(pms.quanty);
     const user = RandomizeUsers(pms.quanty);
-    res.json(user);
-});
-
-app.post('/saveconfigs', function (req, res) {
-    const pms = req.body;
-    const user = addRandomData(pms);
     res.json(user);
 });
 
 app.get('/config/get', function (req, res) {
     const pms = req.query;
-    console.log(pms);
+    //console.log(pms);
     if(pms.paramtype == undefined || pms.paramtype == "") res.json(Object.keys(randomData));
     else 
     {
         const r = randomData[pms.paramtype];
-        console.log("Found " + pms.paramtype + " -> " + r)
+        //console.log("Found " + pms.paramtype + " -> " + r)
         res.json(r);
+    }
+});
+
+app.post('/config/mod', function (req, res) {
+    const pms = req.body;
+    console.log(pms);
+    if(pms.type == undefined || pms.id == undefined || pms.value == undefined) res.json({"sucess":false});
+    else 
+    {
+        //console.log(pms);
+        randomData[pms.type][pms.id] = pms.value;
+        //console.log("Found " + pms.paramtype + " -> " + r)
+        res.json({"sucess":true});
     }
 });
 

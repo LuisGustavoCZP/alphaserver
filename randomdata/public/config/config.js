@@ -1,75 +1,91 @@
 const paramsBox = document.getElementById("paramsbox");
 const datasBox = document.getElementById("datasbox");
-const inputID = document.getElementById("inputID");
-const inputName = document.getElementById("inputName");
-const inputEmail = document.getElementById("inputEmail");
-const inputNames = document.getElementById("inputNames");
-const inputEmails = document.getElementById("inputEmails");
+const paramTypes = [];
 
-var consultTimer;
+var paramType; 
 
-function RefreshOptions (input, callback) 
+function SelectType (evt)
 {
-    if(consultTimer != undefined) 
-    {
-        console.log("Refresh Timer");
-        clearTimeout(consultTimer);
-        consultTimer = undefined;
-    }
-    if(input.value.length <= 3) return;
-
-    console.log("Criando Timer");
-    consultTimer = setTimeout(() => {console.log("Executando Timer"); callback (input);}, 2000);
+    if(paramType != undefined) paramType.classList.remove("selected");
+    paramType = evt.target;
+    paramType.classList.add("selected");
+    //paramTypes.forEach(() => {});
+    //console.log(paramType);
+    LoadConfigData ();
 }
 
-function MakeSearch(search, input, callback) 
+function ChangeData (type, id, txt)
 {
-    fetch(search.route, 
+    console.log(type);
+    fetch("/config/mod", 
     {
         method: 'post',
-        body: search.param != undefined ? JSON.stringify({[search.param]:input.value}) : JSON.stringify({"param":input.value}),
+        body: JSON.stringify({"type":type, "id":id, "value":txt}),
         headers: { 'Content-Type': 'application/json' }
     })
     .then((resp) => resp.json())
-    .then(data => {callback(data, input, search.param);})
+    .then(function (data) {
+        console.log(data);
+    })
     .catch(function (error) {
         console.log('Request failed', error);
     });
 }
 
-function ShowSearchResults (data, input, param, select) 
+function DeleteData (type, id)
 {
-    const text = input.value;
-    select.innerHTML = "";
-    console.log(data);
-    if(data.length > 0) select.innerHTML += `<option onclick="SubmitSelect (${select.id}, ${input.id})" value="${text}">${text}</option>`;
-    data.forEach(element => 
+    console.log(type);
+    fetch("/config/del", 
     {
-        if(text != element[param]) 
-        {
-            select.innerHTML += `<option onclick="SubmitSelect (${select.id}, ${input.id})" value="${element[param]}">${element[param]}</option>`;
-        }
+        method: 'post',
+        body: JSON.stringify({"type":type, "id":id}),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => resp.json())
+    .then(function (data) {
+        console.log(data);
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
     });
-    select.size = select.length;
-    select.classList.add("show");
-    select.focus();
 }
 
-function ShowNames (input) 
-{
-    MakeSearch({route:"/listnames", param:"name"}, input, (data, ipt, param) => {ShowSearchResults(data, ipt, param, inputNames)});
+function CreateElement (id, txt, value) {
+    const l = document.createElement("li");
+    const t = document.createElement("input");
+    t.value = value;
+    t.onchange = evt => {ChangeData(txt, id, evt.target.value)};
+    const btn = document.createElement("button");
+    if(id == -1){
+        btn.innerText = "+";
+        btn.onclick = evt => {DeleteData(paramType.innerText, id)};
+    } else {
+        btn.innerText = "-";
+        btn.onclick = evt => {CreateData(paramType.innerText, id)};
+    }
+    l.append(t);
+    l.append(btn);
+    datasBox.append(l);
 }
 
-function ShowEmails (input) 
+function LoadConfigData ()
 {
-    MakeSearch({route:"/listemails", param:"email"}, input, (data, ipt, param) => {ShowSearchResults(data, ipt, param, inputEmails)});
-}
-
-function SubmitSelect (select, input)
-{
-    select.size = 0;
-    select.classList.remove("show");
-    input.value = select.value;
+    fetch("/config/get?paramtype="+paramType.innerText)
+    .then((resp) => resp.json())
+    .then(function (data) {
+        //console.log(data);
+        datasBox.innerHTML = "";
+        let i = 0;
+        CreateElement(-1, paramType.innerText, "");
+        data.forEach(element => 
+        {
+            const id = i++;
+            CreateElement(id, paramType.innerText, element);
+        });
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+    });
 }
 
 function LoadConfig ()
@@ -77,49 +93,21 @@ function LoadConfig ()
     fetch("/config/get")
     .then((resp) => resp.json())
     .then(function (data) {
-        console.log(data);
+        //console.log(data);
         paramsBox.innerHTML = "";
         data.forEach(element => {
-            paramsBox.innerHTML += `<li><button>${element}</button></li>`;
+            const l = document.createElement("li");
+            const btn = document.createElement("button");
+            btn.innerText = element;
+            btn.onclick = SelectType;
+            l.append(btn);
+            paramsBox.append(l);
+            paramTypes.push(btn);
         });
     })
     .catch(function (error) {
         console.log('Request failed', error);
     });
-}
-
-function SaveConfig () 
-{
-    let user = 
-    {
-        id:parseInt(inputID.value),
-        name:inputName.value, 
-        email:inputEmail.value
-    };
-
-    fetch("/saveconfigs", 
-    {
-        method: 'post',
-        body: JSON.stringify(user),
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then((resp) => resp.json())
-    .then(function (data) {
-        console.log(data);
-        paramsBox.innerHTML = "";
-        data.forEach(element => {
-            paramsBox.innerHTML += `<li><input type="text" value="${element}" /></li>`;
-        });
-    })
-    .catch(function (error) {
-        console.log('Request failed', error);
-    });
-}
-
-function Voltar ()
-{
-    window.location.href=window.location.href.replace("/consulta", "");
 }
 
 LoadConfig ();
-//Consultar ();
