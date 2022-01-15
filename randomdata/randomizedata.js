@@ -101,7 +101,31 @@ app.post('/config/mod', function (req, res) {
     {
         //console.log(pms);
         randomData[pms.type][pms.id] = pms.value;
-        //console.log("Found " + pms.paramtype + " -> " + r)
+        console.log(`Mod ${pms.type}[${pms.id}] => ${pms.value}`)
+        res.json({"sucess":true});
+    }
+});
+
+app.post('/config/add', function (req, res) {
+    const pms = req.body;
+    console.log(pms);
+    if(pms.type == undefined || pms.value == undefined) res.json({"sucess":false});
+    else 
+    {
+        randomData[pms.type].push(pms.value);
+        console.log(`Add ${pms.type}[${pms.id}] = ${pms.value}`)
+        res.json({"sucess":true});
+    }
+});
+
+app.post('/config/del', function (req, res) {
+    const pms = req.body;
+    console.log(pms);
+    if(pms.type == undefined || pms.id == undefined) res.json({"sucess":false});
+    else 
+    {
+        randomData[pms.type].splice(pms.id, 1);
+        console.log(`Delete  ${pms.type}[${pms.id}]`);
         res.json({"sucess":true});
     }
 });
@@ -109,5 +133,3 @@ app.post('/config/mod', function (req, res) {
 app.listen(8000, function () {
     console.log('Servidor pronto!');
 });
-
-RandomizeUsers(50);

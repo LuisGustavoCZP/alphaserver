@@ -1,7 +1,6 @@
 const paramsBox = document.getElementById("paramsbox");
 const datasBox = document.getElementById("datasbox");
 const paramTypes = [];
-
 var paramType; 
 
 function SelectType (evt)
@@ -17,6 +16,10 @@ function SelectType (evt)
 function ChangeData (type, id, txt)
 {
     console.log(type);
+    if(id == -1){
+        console.log("Add novo");
+        return;
+    }
     fetch("/config/mod", 
     {
         method: 'post',
@@ -26,6 +29,25 @@ function ChangeData (type, id, txt)
     .then((resp) => resp.json())
     .then(function (data) {
         console.log(data);
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+    });
+}
+
+function CreateData (type, txt)
+{
+    console.log(type);
+    fetch("/config/add", 
+    {
+        method: 'post',
+        body: JSON.stringify({"type":type, "value":txt}),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => resp.json())
+    .then(function (data) {
+        console.log(data);
+        if(data.sucess) LoadConfigData();
     })
     .catch(function (error) {
         console.log('Request failed', error);
@@ -44,6 +66,7 @@ function DeleteData (type, id)
     .then((resp) => resp.json())
     .then(function (data) {
         console.log(data);
+        if(data.sucess) LoadConfigData();
     })
     .catch(function (error) {
         console.log('Request failed', error);
@@ -58,14 +81,15 @@ function CreateElement (id, txt, value) {
     const btn = document.createElement("button");
     if(id == -1){
         btn.innerText = "+";
-        btn.onclick = evt => {DeleteData(paramType.innerText, id)};
+        btn.onclick = evt => {CreateData(paramType.innerText, t.value)};
     } else {
         btn.innerText = "-";
-        btn.onclick = evt => {CreateData(paramType.innerText, id)};
+        btn.onclick = evt => {DeleteData(paramType.innerText, id)};
     }
     l.append(t);
     l.append(btn);
     datasBox.append(l);
+    return l;
 }
 
 function LoadConfigData ()

@@ -90,10 +90,22 @@ main {
     display: flex;
     flex-grow: 1;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 main > ul {
+    display: flex;
     width: 70%;
+    justify-content: center;
+    flex-direction: column;
+}
+
+main > h3 {
+    text-align: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
 }
 
 ul {
