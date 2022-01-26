@@ -83,6 +83,33 @@ function SubmitSelect (select, input)
     input.value = select.value;
 }
 
+function CreateUserBox (user, index) 
+{
+    const li = document.createElement("li");
+
+    const idEl = document.createElement("h3");
+    idEl.innerText = `ID: ${user.id}`;
+    li.append(idEl);
+
+    const nameEl = document.createElement("h4");
+    nameEl.innerText = `Nome: ${user.name}`;
+    li.append(nameEl);
+
+    const emailEl = document.createElement("h5");
+    emailEl.innerText = `Email: ${user.email}`;
+    li.append(emailEl);
+
+    const delEl = document.createElement("button");
+    delEl.innerText = `X`;
+    delEl.onclick = x => {
+        RemoveUser (user.id)
+        li.remove();
+    };
+    li.append(delEl);
+
+    return li;
+}
+
 function Consultar () 
 {
     let user = 
@@ -102,9 +129,29 @@ function Consultar ()
     .then(function (data) {
         console.log(data);
         produtosBox.innerHTML = "";
-        data.forEach(element => {
-            produtosBox.innerHTML += "<li><h3>ID: "+element.id+"</h3><h4>Nome: "+element.name+"</h4><h5>Email: "+element.email+"</h5></li>";
+
+        data.forEach((element, i) => {
+            produtosBox.append(CreateUserBox(element, i));
+            //produtosBox.innerHTML += "<li><h3>ID: "+element.id+"</h3><h4>Nome: "+element.name+"</h4><h5>Email: "+element.email+"</h5></li>";
         });
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+    });
+}
+
+function RemoveUser (userid) 
+{
+    console.log(userid);
+    fetch("/deluser", 
+    {
+        method: 'delete',
+        body: JSON.stringify({"userid":userid}),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => resp.json())
+    .then(function (data) {
+        console.log(data);
     })
     .catch(function (error) {
         console.log('Request failed', error);

@@ -88,3 +88,12 @@ li > *:first-child {
     display: flex;
     width: 20%;
 }
+
+li > *:last-child {
+    display: flex;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 0;
+    text-align: center;
+    align-self: center;
+}

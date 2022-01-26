@@ -8,19 +8,52 @@ app.use(express.static(__dirname+"/public"));
 var clientesPath = "data/rusuarios.json"
 var clientes = loadUsers();
 
-function loadUsers () {
+function loadUsers () 
+{
     return JSON.parse(filesystem.readFileSync(clientesPath, 'utf-8'));
 }
 
 function addUser (user) {
     if(user.name == "" | undefined) return;
     if(user.email == "" | undefined) return;
-    user.id = clientes.count++;
-    clientes.list.push(user);
-    filesystem.writeFileSync(clientesPath, JSON.stringify(clientes), 'utf8', function (err) {
+
+    if(clientes.free && clientes.free.length > 0)
+    {
+        user.id = clientes.free.pop();
+        //arr.splice(2, 0, "Lene");
+    }
+    else user.id = clientes.count ? clientes.count++ : clientes.length;
+
+    clientes.push(user);
+    /* filesystem.writeFileSync(clientesPath, JSON.stringify(clientes), 'utf8', function (err) {
         if (err) throw err;
-    });
+    }); */
     return user;
+}
+
+function remUser (userid) {
+    if(userid == -1 && clientes.length <= 0) return false;
+
+    for (let i = 0; i < clientes.length; i++)
+    {
+        const user = clientes[i];
+        if(user.id == userid)
+        {
+            clientes.splice(i, 1);
+
+            //console.log(clientes.free);
+            if(!clientes.free) clientes.free = [];
+            //console.log(clientes.free);
+            clientes.free.push(user.id);
+
+            return true;
+        }
+    }
+    
+    /* filesystem.writeFileSync(clientesPath, JSON.stringify(clientes), 'utf8', function (err) {
+        if (err) throw err;
+    }); */
+    return false;
 }
 
 function StrangeCompare (a, b) {
@@ -67,10 +100,11 @@ function searchUsers (resultSearch, param, value)
 {
     if(value == undefined || value == "") return [];
     const vP = value.toString().toLowerCase();
+    
     resultSearch = resultSearch.reduce((p, user) => 
     {
         const userparam = user[param].toString();
-        console.log(userparam);
+        //console.log(userparam);
         if(userparam == undefined) return p;
         if(userparam.toLowerCase().includes(vP)) p.push(user);
         return p;
@@ -85,10 +119,18 @@ app.use(function (req, res, next) {
     next();
 })
 
-app.post('/newuser', function (req, res) {
+app.put('/newuser', function (req, res) {
     const pms = req.body;
     const user = addUser(pms);
     res.json(user);
+});
+
+app.delete('/deluser', function (req, res) {
+    const pms = req.body;
+    const userid = pms["userid"];
+    console.log(userid);
+    const user = remUser(userid);
+    res.send(user);
 });
 
 app.get('/all', function (req, res) {

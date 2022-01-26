@@ -11,7 +11,7 @@ function RegisterUser ()
 
     fetch("/newuser", 
     {
-        method: 'post',
+        method: 'put',
         body: JSON.stringify(user),
         headers: { 'Content-Type': 'application/json' }
     })
